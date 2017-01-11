@@ -1,7 +1,7 @@
 sudo: false
 dist: trusty
 language: generic
-script: make && make test
+script: make
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_8081b59d1a17_key -iv $encrypted_8081b59d1a17_iv -in signing.key.enc -out signing.key -d
 - make deploy

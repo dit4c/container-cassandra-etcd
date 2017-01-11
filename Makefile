@@ -1,4 +1,4 @@
-.PHONY = clean all
+.PHONY = clean all deploy
 
 NAME=cassandra-etcd
 BASE_DIR = $(shell pwd)
@@ -26,12 +26,12 @@ DOCKER2ACI_URL=https://github.com/appc/docker2aci/releases/download/v${DOCKER2AC
 
 all: ${TARGET_IMAGE}
 
-deploy: dist/$(NAME).linux.amd64.aci.asc
+deploy: ${TARGET_IMAGE} ${TARGET_IMAGE}.asc
 
 clean:
 	rm -rf ${BUILD_DIR} ${OUT_DIR}
 
-${OUT_DIR}/%.asc: dist/% signing.key
+${TARGET_IMAGE}.asc: ${TARGET_IMAGE} signing.key
 	$(eval TMP_KEYRING := $(shell mktemp -p ${BUILD_DIR}))
 	$(eval GPG_FLAGS := --batch --no-default-keyring --keyring $(TMP_KEYRING) )
 	$(GPG) $(GPG_FLAGS) --import signing.key
