@@ -1,11 +1,13 @@
 .PHONY = clean all
 
+NAME=cassandra-etcd
 BASE_DIR = $(shell pwd)
 BUILD_DIR = ${BASE_DIR}/build
 OUT_DIR = ${BASE_DIR}/dist
 TARGET_IMAGE = ${OUT_DIR}/cassandra-etcd-linux-amd64.aci
 
 MKDIR_P = mkdir -p
+GPG=gpg2
 
 CASSANDRA_DOCKER_IMAGE=library/cassandra:latest
 CASSANDRA_ACI=${BUILD_DIR}/library-cassandra-latest.aci
@@ -24,6 +26,18 @@ DOCKER2ACI_URL=https://github.com/appc/docker2aci/releases/download/v${DOCKER2AC
 
 all: ${TARGET_IMAGE}
 
+deploy: dist/$(NAME).linux.amd64.aci.asc
+
+clean:
+	rm -rf ${BUILD_DIR} ${OUT_DIR}
+
+${OUT_DIR}/%.asc: dist/% signing.key
+	$(eval TMP_KEYRING := $(shell mktemp -p ${BUILD_DIR}))
+	$(eval GPG_FLAGS := --batch --no-default-keyring --keyring $(TMP_KEYRING) )
+	$(GPG) $(GPG_FLAGS) --import signing.key
+	$(GPG) $(GPG_FLAGS) --armour --detach-sign $<
+	rm $(TMP_KEYRING)
+
 ${TARGET_IMAGE}: ${OUT_DIR} ${ACBUILD} ${CASSANDRA_ACI} ${CASSANDRA_ETCD_SEED_PROVIDER_JAR}
 	${ACBUILD} --debug begin ${CASSANDRA_ACI}
 	${ACBUILD} --debug copy-to-dir ${CASSANDRA_ETCD_SEED_PROVIDER_JAR} /usr/share/cassandra/lib/
@@ -33,9 +47,6 @@ ${TARGET_IMAGE}: ${OUT_DIR} ${ACBUILD} ${CASSANDRA_ACI} ${CASSANDRA_ETCD_SEED_PR
 	${ACBUILD} --debug set-group cassandra
 	${ACBUILD} --debug write --overwrite $@
 	${ACBUILD} --debug end
-
-clean:
-	rm -rf ${BUILD_DIR} ${OUT_DIR}
 
 ${CASSANDRA_ACI}:
 	cd ${BUILD_DIR} && ${DOCKER2ACI} docker://${CASSANDRA_DOCKER_IMAGE}

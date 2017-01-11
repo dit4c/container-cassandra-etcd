@@ -1,0 +1,16 @@
+sudo: false
+dist: trusty
+language: generic
+script: make && make test
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_8081b59d1a17_key -iv $encrypted_8081b59d1a17_iv -in signing.key.enc -out signing.key -d
+- make deploy
+deploy:
+  provider: releases
+  api_key:
+    secure: G/R06HTYLVThtoSooDN0sr290hBJ+vpPSleQmq9WIGEAWmSAmg1WcU9D2LUArlITGFHeEOSG4sCD5rVwLsmmCjr5SymX+JoAB5vK5sD9rXcQbDowCqfjRKX8d/7SIrq7fvn+C0D2/9XjntldY6z4J57+2kEYIvTvAdpQXM107VVEam27OyCd33vy5o/XKR+OxSx/X1OcKInvWk2Csp3iqoCMjUnpJADTQg5xiiswHuOhtdZolai3//P67/1uR176QYJlXOgJQ/lLDa9eWvUhYTLzw50DtqRVD6WSn69/qQAbyUlSR0tKG0GuxsuN1jrH4Foo8CM+WFKjF/Ea3HqZ6OHe0z7+ZfT+BqxdFjlmyRnxOtT9KyvZvSPxfIBjV3lolomXNW8NKKRc3DznW9MeYRrm7WcdCEC3VT6k3pXp+VGE7xfkdjdCfrlH/wAAv+LL8qRBq0AAFXsEIeyOuEBN0f5RWEUWlwWF/YnS03/msJID3e3YD0nyYteM2xhgXfTOBfPuJzuRvCj1ACqJXHyWTdrDkpwxiaCKZ5SXTHpGQD5jdHIN3fLiu7Frj4RcnGIjkQtv2XAk7Hsprdu/QMMlGnVs8+5o10nvBaoKwU0UAJ3bNWKHQE7ClD2koK24Oduyk0wcDgRHdGFjd7LPOyE8CpTib8VWnjDziva64rbuC3I=
+  file:
+    - dist/container-cassandra-etcd.linux.amd64.aci
+    - dist/container-cassandra-etcd.linux.amd64.aci.asc
+  on:
+    repo: dit4c/container-cassandra-etcd
