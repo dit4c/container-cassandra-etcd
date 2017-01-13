@@ -13,5 +13,6 @@ deploy:
     - dist/container-cassandra-etcd.linux.amd64.aci
     - dist/container-cassandra-etcd.linux.amd64.aci.asc
   on:
+    tags: true
     repo: dit4c/container-cassandra-etcd
   skip_cleanup: true
