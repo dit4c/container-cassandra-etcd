@@ -4,7 +4,7 @@ NAME=cassandra-etcd
 BASE_DIR = $(shell pwd)
 BUILD_DIR = ${BASE_DIR}/build
 OUT_DIR = ${BASE_DIR}/dist
-TARGET_IMAGE = ${OUT_DIR}/cassandra-etcd-linux-amd64.aci
+TARGET_IMAGE = ${OUT_DIR}/cassandra-etcd.linux.amd64.aci
 
 MKDIR_P = mkdir -p
 GPG=gpg2
